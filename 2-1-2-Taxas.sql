@@ -35,7 +35,7 @@ SELECT co.Descricao AS "2.1.2 - TAXAS"
 	,a21.[2021]
 	,a20.[2020]
 	,(a21.[2021] - a20.[2020]) AS "DIF"
-	,(a21.[2021] - a20.[2020]) / (a20.[2020])*100 as "DIF%"
+	,(a21.[2021] - a20.[2020]) / (a20.[2020])*100 AS "DIF%"
 FROM 
 		(SELECT Nivel4, SUM (ValorRealizado + ValorDeducao + ValorEstorno) AS "2021"
 		FROM Receitas
