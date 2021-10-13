@@ -4,29 +4,29 @@
 
 
 SELECT	z.[DESPESA POR UNIDADE GESTORA]
-		,FORMAT (ISNULL(z.[2021],0),'C','PT-BR') AS '2021'
-		,FORMAT (ISNULL(z.[2020],0),'C','PT-BR') AS '2020'
-		,FORMAT (ISNULL(z.DIF,0),'C','PT-BR') AS 'DIF'
-		,CONCAT (CAST(ISNULL (z.[DIF%],0) AS VARCHAR(10)),'%') AS 'DIF%'
+		,FORMAT (z.[2021],'C','PT-BR') AS '2021'
+		,FORMAT (z.[2020],'C','PT-BR') AS '2020'
+		,FORMAT (z.DIF,'C','PT-BR') AS 'DIF'
+		,CONCAT (CAST(z.[DIF%] AS VARCHAR(10)),'%') AS 'DIF%'
 
 FROM
 (
 SELECT		'TOTAL' AS 'DESPESA POR UNIDADE GESTORA'
-			,SUM(d21.[2021]) AS '2021'
-			,SUM(d20.[2020]) AS '2020'
-			,SUM(d21.[2021]) - SUM(d20.[2020]) AS 'DIF'
-			,SUM(d21.[2021] - d20.[2020])/SUM(d20.[2020])*100 AS 'DIF%'
+			,ISNULL(SUM(d21.[2021]),0) AS '2021'
+			,ISNULL(SUM(d20.[2020]),0) AS '2020'
+			,ISNULL(SUM(d21.[2021]) - SUM(d20.[2020]),0) AS 'DIF'
+			,ISNULL(SUM(d21.[2021] - d20.[2020])/SUM(d20.[2020])*100,0) AS 'DIF%'
 
 	FROM (
 		SELECT	UG
-				,SUM(ValorPago - ValorPagoDevolvido) AS '2021'		
+				,SUM(ValorPago - ValorPagoDevolvido) AS '2021'
 		FROM Despesas
 		WHERE DataMovimento BETWEEN '2021-01-01' AND '2021-07-31'
 		GROUP BY UG) d21
 	FULL OUTER JOIN
 		(
 		SELECT	UG
-				,SUM(ValorPago - ValorPagoDevolvido) AS '2020'		
+				,SUM(ValorPago - ValorPagoDevolvido) AS '2020'
 		FROM Despesas
 		WHERE DataMovimento BETWEEN '2020-01-01' AND '2020-07-31'
 		GROUP BY UG) d20
@@ -39,10 +39,10 @@ SELECT		'TOTAL' AS 'DESPESA POR UNIDADE GESTORA'
 UNION ALL
 
 SELECT		ug.DescricaoUG AS 'DESPESA POR UNIDADE GESTORA'
-			,d21.[2021] AS '2021'
-			,d20.[2020] AS '2020'
-			,d21.[2021] - d20.[2020] AS 'DIF'
-			,IIF(d20.[2020]=0,0,(d21.[2021] - d20.[2020])/d20.[2020]*100) AS 'DIF%'
+			,ISNULL(d21.[2021],0) AS '2021'
+			,ISNULL(d20.[2020],0) AS '2020'
+			,ISNULL(d21.[2021] - d20.[2020],0) AS 'DIF'
+			,ISNULL(IIF(d20.[2020]=0,0,(d21.[2021] - d20.[2020])/d20.[2020]*100),0) AS 'DIF%'
 
 	FROM (
 		SELECT	UG
@@ -53,7 +53,7 @@ SELECT		ug.DescricaoUG AS 'DESPESA POR UNIDADE GESTORA'
 	FULL OUTER JOIN
 		(
 		SELECT	UG
-				,SUM(ValorPago - ValorPagoDevolvido) AS '2020'		
+				,SUM(ValorPago - ValorPagoDevolvido) AS '2020'
 		FROM Despesas
 		WHERE DataMovimento BETWEEN '2020-01-01' AND '2020-07-31'
 		GROUP BY UG) d20
